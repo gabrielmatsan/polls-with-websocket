@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:3333
+
+@pollId = 09badad7-c95a-4ca4-9b51-44fd972c3d8d
+
+# @name create_polls
+
+POST {{baseUrl}}/polls
+Content-Type: application/json
+
+{
+  "title":"Enquete sobre frameworks",
+  "options": ["Express", "Koa", "NestJS", "AdonisJS", "Fastify"]
+}
+
+###
+
+# @name get_poll
+
+GET {{baseUrl}}/polls/09badad7-c95a-4ca4-9b51-44fd972c3d8d
+Content-Type: application/json
+
+###
+
+# @name vote_poll
+
+POST {{baseUrl}}/polls/09badad7-c95a-4ca4-9b51-44fd972c3d8d/votes
+Content-Type: application/json
+
+{
+  "pollOptionId": "c96c3869-818e-4d59-bbcf-dd1f6d0f43e5"
+}
