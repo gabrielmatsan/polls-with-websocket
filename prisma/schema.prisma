@@ -25,7 +25,7 @@ model PollOption {
   pollId String
 
   poll Poll   @relation(fields: [pollId], references: [id])
-  votes Vote[]
+  votes Vote[] 
 }
 
 model Vote {

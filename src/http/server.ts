@@ -6,15 +6,14 @@ import cookie from '@fastify/cookie'
 import websocket from '@fastify/websocket'
 import { pollResults } from './ws/poll-results'
 
-const app = fastify()
+const app = fastify({ logger: true })
+app.register(websocket)
 
 app.register(cookie, {
   secret: 'poll-secret-key',
   hook: 'onRequest',
   parseOptions: {},
 })
-
-app.register(websocket)
 
 app.register(createPoll)
 app.register(getPoll)

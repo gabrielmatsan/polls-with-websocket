@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import z from 'zod'
 import { prisma } from '../../lib/prisma'
 import { redis } from '../../lib/redis'
+import { voting } from '../../utils/voting-pub-sub'
 
 export async function voteOnPoll(app: FastifyInstance) {
   app.post('/polls/:pollId/votes', async (request, reply) => {
@@ -54,7 +55,12 @@ export async function voteOnPoll(app: FastifyInstance) {
       })
 
       // Decrementa o voto antigo
-      await redis.zincrby(pollId, -1, existingVote.pollOptionId)
+      const votes = await redis.zincrby(pollId, -1, existingVote.pollOptionId)
+
+      voting.publish(pollId, {
+        pollOptionId: existingVote.pollOptionId,
+        votes: Number(votes),
+      })
     }
 
     // Registra o novo voto
@@ -67,7 +73,12 @@ export async function voteOnPoll(app: FastifyInstance) {
     })
 
     // Incrementa o voto na opção escolhida
-    await redis.zincrby(pollId, 1, pollOptionId)
+    const votes = await redis.zincrby(pollId, 1, pollOptionId)
+
+    voting.publish(pollId, {
+      pollOptionId,
+      votes: Number(votes),
+    })
 
     return reply.status(201).send()
   })
